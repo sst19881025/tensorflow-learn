@@ -3,7 +3,7 @@
 import tensorflow as tf
 import pdb
 import tensorflow.examples.tutorials.mnist.input_data as input_data
-mnist = input_data.read_data_sets("/home/sst/Documents/socialcredits/data/tenserflow_data/mnist/", one_hot=True)
+mnist = input_data.read_data_sets("/home/sst/Documents/socialcredits/data/tenserflow/mnist/", one_hot=True)
 
 # 定义变量
 x = tf.placeholder(tf.float32, [None, 784])
@@ -17,7 +17,7 @@ y = tf.nn.softmax(tf.matmul(x,W) + b)
 # 定义真实值
 y_ = tf.placeholder("float", [None,10])
 
-# 定义交叉熵
+# 定义交叉熵(loss)
 cross_entropy = -tf.reduce_sum(y_*tf.log(y))
 
 # 定义梯度下降来迭代一步

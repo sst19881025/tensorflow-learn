@@ -41,8 +41,7 @@ def placeholder_inputs(batch_size):
 输出：喂养字典feed_dict.
 '''
 def fill_feed_dict(data_set, images_pl, labels_pl):
-    images_feed, labels_feed = data_set.next_batch(FLAGS.batch_size,
-                                                                                                 FLAGS.fake_data)
+    images_feed, labels_feed = data_set.next_batch(FLAGS.batch_size, FLAGS.fake_data)
     feed_dict = {
         images_pl: images_feed,
         labels_pl: labels_feed,
@@ -67,9 +66,7 @@ def do_eval(sess,
     steps_per_epoch = data_set.num_examples // FLAGS.batch_size
     num_examples = steps_per_epoch * FLAGS.batch_size
     for step in xrange(steps_per_epoch):
-        feed_dict = fill_feed_dict(data_set,
-                                                             images_placeholder,
-                                                             labels_placeholder)
+        feed_dict = fill_feed_dict(data_set, images_placeholder, labels_placeholder)
         true_count += sess.run(eval_correct, feed_dict=feed_dict)
     precision = float(true_count) / num_examples
     print('  Num examples: %d  Num correct: %d  Precision @ 1: %0.04f' %
@@ -84,7 +81,7 @@ def run_training():
     with tf.Graph().as_default():
         # 配置graph
         images_placeholder, labels_placeholder = placeholder_inputs(FLAGS.batch_size)
-        # logits是预测后未归一化的概率分布
+        # logits是shape为(batch_size，NUM_CLASSES)，表示每条数据预测后未归一化的概率分布
         logits = mnist.inference(images_placeholder,
                                     FLAGS.hidden1,
                                     FLAGS.hidden2)
@@ -119,7 +116,9 @@ def run_training():
                                         images_placeholder,
                                         labels_placeholder)
 
-            # 丢弃了train数据
+            # 丢弃了train数据, 记录loss数据, sess.run(train_op)是最简单的训练代码
+            # run(self, fetches, feed_dict=None, options=None, run_metadata=None)
+            # fetches格式很自由，详情见help(tf.Session.run)
             _, loss_value = sess.run([train_op, loss], feed_dict=feed_dict)
             duration = time.time() - start_time
 
@@ -199,7 +198,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--input_data_dir',
         type=str,
-        default='../data/mnist/',
+        default='/home/sst/Documents/socialcredits/data/tenserflow/mnist/',
         help='Directory to put the input data.'
     )
     parser.add_argument(
@@ -216,7 +215,6 @@ if __name__ == '__main__':
     )
     # FLAGS用以记录parser.argument的结果
     FLAGS, unparsed = parser.parse_known_args()
-    pdb.set_trace()
     tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
 
 

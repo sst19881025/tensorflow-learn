@@ -92,7 +92,8 @@ def training(loss, learning_rate):
 输出：预测正确的数量
 '''
 def evaluation(logits, labels):
-    correct = tf.nn.in_top_k(logits, labels, 1)
+    # label在top-k中为True，否则为False
+    correct = tf.nn.in_top_k(logits, labels, k=1)
     return tf.reduce_sum(tf.cast(correct, tf.int32))
 
 
