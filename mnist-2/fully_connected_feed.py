@@ -5,6 +5,7 @@
 '''1.导入模块
 '''
 from __future__ import absolute_import
+# / 表示浮点除法,  // 为整数除
 from __future__ import division
 from __future__ import print_function
 
@@ -65,6 +66,7 @@ def do_eval(sess,
     true_count = 0    # 记录预测正确的数目。
     steps_per_epoch = data_set.num_examples // FLAGS.batch_size
     num_examples = steps_per_epoch * FLAGS.batch_size
+    # 鉴于num_examples的算法，多余batch_size整数倍的尾巴样本将被丢弃，没有在评估中起作用
     for step in xrange(steps_per_epoch):
         feed_dict = fill_feed_dict(data_set, images_placeholder, labels_placeholder)
         true_count += sess.run(eval_correct, feed_dict=feed_dict)
