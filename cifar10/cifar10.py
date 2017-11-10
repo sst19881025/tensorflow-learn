@@ -52,7 +52,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--batch_size', type=int, default=128,
                     help='Number of images to process in a batch.')
 
-parser.add_argument('--data_dir', type=str, default='/tmp/cifar10_data',
+parser.add_argument('--data_dir', type=str, default='/home/sst/Documents/socialcredits/data/tenserflow/cifar10_data',
                     help='Path to the CIFAR-10 data directory.')
 
 parser.add_argument('--use_fp16', type=bool, default=False,
