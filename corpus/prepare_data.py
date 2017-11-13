@@ -39,21 +39,27 @@ mnist = read_data_sets('/home/sst/Documents/socialcredits/data/tenserflow/mnist'
 #print mnist.train.images.shape
 
 
-class PrepareData(object):
-
-    def __init__(self, db='corpus', collection='news_pos_tag'):
-        self._char2id = {}
-        self._id2char = {}
-        self.X = []
-        self.Y = []
-        self.__get_data(db, collection)
+class Corpus(object):
+    def __init__(self, db, collection, char2id):
+        self._data = self.__get_data(db, collection)
+        self._char2id = char2id
+        self._cursor = 0
 
     def __get_data(self, db, collection):
         conn = pymongo.MongoClient(['127.0.0.1'])
         db = conn[db]
-        raw = db[collection].find({}, {'pos_tag':1})
-        for doc in raw:
-            word_list = doc['pos_tag']['word']
+        data = db[collection].find({}, {'word':1, 'tag':1, '_id':0})
+        return data
+
+    def next_batch(self, size=100):
+        res = self.__process_data(self._data[self._cursor:self._cursor+size])
+        self._cursor += size
+        return res
+
+    def __process_data(self, iter_data):
+        X, Y = [], []
+        for doc in inter_data:
+            word_list = doc['word']
             cur_sentence = []
             cur_labels = []
 
@@ -67,21 +73,39 @@ class PrepareData(object):
                 else:
                     cur_labels += [2] + [3] * (word_len - 2) + [4]
                 for char in word:
-                    if char not in self._char2id:
-                        self._char2id.update({char: len(self._char2id)})
-                        self._id2char.update({len(self._char2id): char})
                     if char not in [u',', u'，', u';', u'；', u'。', u'?', u'？', u'!', u'！']:
                         cur_sentence.append(self._char2id.get(char))
                     else:
-                        self.X.append(self.__fill_symbols(cur_sentence))
-                        self.Y.append(self.__fill_symbols(cur_labels))
+                        X.append(self.__fill_symbols(cur_sentence))
+                        Y.append(self.__fill_symbols(cur_labels))
                         cur_sentence = []
                         cur_labels = []
-        self.X = np.array(self.X)
-        self.Y = np.array(self.Y)
-
+        return (np.array(X), np.array(Y))
 
     def __fill_symbols(self, sentence, size=32):
         return sentence[:size] + [0] * (size-len(sentence))
+
+
+class DataSets(object):
+    def __init__(self):
+        self._char2id = {}
+        self._id2char = {}
+        self.__mapping_id'corpus', 'news_train')
+        self.train = Corpus('corpus', 'news_train', self._char2id)
+        self.test = Corpus('corpus', 'news_test', self._char2id)
+
+    def __mapping_id(self, db, collection):
+        conn = pymongo.MongoClient(['127.0.0.1'])
+        db = conn[db]
+        data = db[collection].find({}, {'word':1, 'tag':1, '_id':0})
+        for doc in data:
+            word_list = doc['word']
+            for word in word_list:
+                for char in word:
+                    if char not in self._char2id:
+                        self._char2id.update({char: len(self._char2id)})
+                        self._id2char.update({len(self._char2id): char})
+
+
 
 

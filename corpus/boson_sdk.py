@@ -2,8 +2,6 @@
 
 from __future__ import print_function, unicode_literals
 from bosonnlp import BosonNLP
-from scpy.kv_helper import trans_json
-from scpy.logger import get_logger
 
 import os
 import re
@@ -12,11 +10,10 @@ import pymongo
 
 # 注意：在测试时请更换为您的API token。
 nlp = BosonNLP('Ofzs3sqP.19198.Ax9F9vqfSTYG')
-logger = get_logger(__file__)
 
 
 
-def nlp_pos_tag(text):
+def nlp_seg(text):
     """ boson 分词标注
     # nlp.tag 完整的参数调用格式如下：
     # result = nlp.tag(s, space_mode=0, oov_level=3, t2s=0, special_char_conv=0)
@@ -30,19 +27,20 @@ def nlp_pos_tag(text):
     # result = nlp.tag(s, space_mode=0, oov_level=3, t2s=0, special_char_conv=1)
     """
     token_str = u'，,；;、‘’“”！!？?：:。.'
+    text = text.decode('utf-8') if isinstance(text, str) else text
     text = re.sub(u'(?<=[\u2E80-\u9FFF{}])[\s]+(?=[\u2E80-\u9FFF{}])'.format(\
-                        token_str, token_str), '',  trans_json(text)).strip()
+                        token_str, token_str), '',  text).strip()
     sentence_list = [text] # map(lambda x:x.strip(), re.split(u'[,，;；.。?？!！]', text))
     result = nlp.tag(sentence_list, space_mode=1, oov_level=3, t2s=1, special_char_conv=0)
     return result
 
 
-def save_pos_tag(_id, pos_tag):
+def save_data(_id, word, tag):
     conn = pymongo.MongoClient(['127.0.0.1:27017'])
     db = conn['corpus']
     #pos_tag_text = map(lambda x:' '.join(['%s/%s' % it for it in zip(x['word'], x['tag'])]), pos_tag)
     #db.news_pos_tag.save({'_id':_id, 'pos_tag':pos_tag, 'text':pos_tag_text})
-    db.news_pos_tag.save({'_id':_id, 'pos_tag':pos_tag[0]})
+    db['news_train'].save({'_id':_id, 'word':word, 'tag':tag})
 
 
 def main(data_path):
@@ -53,10 +51,12 @@ def main(data_path):
         if name.endswith('~'):
             continue
         news = open(os.path.join(data_path, name)).read()
-        pos_tag_data = nlp_pos_tag(news)
-        save_pos_tag(_id=name, pos_tag=pos_tag_data)
+        wd_tag_data = nlp_seg(news)[0]
+        wd_data = wd_tag_data['word']
+        tag_data = wd_tag_data['tag']
+        save_data(_id=name, word=wd_data, tag=tag_data)
         if i % 100 == 0:
-            logger.info('{} finished'.format(i))
+            print('{} finished'.format(i))
         #pdb.set_trace()
 
 def res_text(result):
