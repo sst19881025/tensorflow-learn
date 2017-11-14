@@ -30,7 +30,7 @@ def list_key_objects(bucket_name, prefix_key):
 
 
 def save_text(content, fname):
-    fold = '/usr/app/corpus_gen/utils/data/news'
+    fold = '/usr/app/tensorflow-learn/corpus/data/news'
     w = open('/'.join([fold, fname]), 'w')
     w.write(content)
     w.close()
@@ -47,4 +47,4 @@ def get_s3_text(bucket_name, prefix_key):
         #pdb.set_trace()
 
 if __name__ == "__main__":
-    get_s3_text("search-key-news", "text/2017/11/09")
+    get_s3_text("search-key-news", "text/2017/11/10")

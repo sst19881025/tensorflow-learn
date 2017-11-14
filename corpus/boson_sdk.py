@@ -40,7 +40,7 @@ def save_data(_id, word, tag):
     db = conn['corpus']
     #pos_tag_text = map(lambda x:' '.join(['%s/%s' % it for it in zip(x['word'], x['tag'])]), pos_tag)
     #db.news_pos_tag.save({'_id':_id, 'pos_tag':pos_tag, 'text':pos_tag_text})
-    db['news_train'].save({'_id':_id, 'word':word, 'tag':tag})
+    db['news'].save({'_id':_id, 'word':word, 'tag':tag})
 
 
 def main(data_path):
