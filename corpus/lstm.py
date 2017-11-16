@@ -93,7 +93,7 @@ accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
 init = tf.global_variables_initializer()
 
 # ** 0.char embedding，请自行理解 embedding 的原理！！做 NLP 的朋友必须理解这个
-embedding = tf.get_variable("embedding", [news_data.vocab_size, embedding_size], dtype=tf.float32)
+#embedding = tf.get_variable("embedding", [news_data.vocab_size, embedding_size], dtype=tf.float32)
 
 
 # Start training
@@ -106,10 +106,11 @@ with tf.Session() as sess:
         batch_x, batch_y = news_data.train.next_batch(batch_size)
 
         # Reshape data to get 32(timestemps) seq of 64(embbeding_size) elements
-        #batch_x = batch_x.reshape((batch_size, timesteps, embedding_size))
-        # X_inputs.shape = [batchsize, timestep_size]  ->  inputs.shape = [batchsize, timestep_size, embedding_size]
-        batch_x = tf.nn.embedding_lookup(embedding, batch_x)  
         pdb.set_trace()
+        batch_x = batch_x.reshape((batch_size, timesteps, embedding_size))
+        # X_inputs.shape = [batchsize, timestep_size]  ->  inputs.shape = [batchsize, timestep_size, embedding_size]
+        #batch_x = tf.nn.embedding_lookup(embedding, batch_x)  
+        #pdb.set_trace()
         # Run optimization op (backprop)
         sess.run(train_op, feed_dict={X: batch_x, Y: batch_y})
         if step % display_step == 0 or step == 1:

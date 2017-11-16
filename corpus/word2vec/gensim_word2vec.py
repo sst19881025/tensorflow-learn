@@ -11,7 +11,8 @@ from gensim.models.word2vec import LineSentence
 
 
 if __name__ == '__main__':
-    # 执行 "python gensim_word2vec.py news.text news.text.model news.text.vector":
+    # 执行 python gensim_word2vec.py /home/sst/Documents/socialcredits/data/tenserflow/word2vec/news.text news.text.model news.text.vector
+    # 加载 model = gensim.models.Word2Vec.load("news.text.model")
     program = os.path.basename(sys.argv[0])
     logger = logging.getLogger(program)
 
@@ -25,7 +26,7 @@ if __name__ == '__main__':
         sys.exit(1)
     inp, outp1, outp2 = sys.argv[1:4]
 
-    model = Word2Vec(LineSentence(inp), size=64, window=5, min_count=5,
+    model = Word2Vec(LineSentence(inp), size=64, window=5, min_count=1,
                      workers=multiprocessing.cpu_count())
 
     # trim unneeded model memory = use(much) less RAM
