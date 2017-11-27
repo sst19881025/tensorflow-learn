@@ -29,22 +29,22 @@ def list_key_objects(bucket_name, prefix_key):
     return [item["Key"] for item in a["Contents"]]
 
 
-def save_text(content, fname):
-    fold = '/usr/app/tensorflow-learn/corpus/data/news'
+def save_text(content, fold, fname):
     w = open('/'.join([fold, fname]), 'w')
     w.write(content)
     w.close()
 
 
-def get_s3_text(bucket_name, prefix_key):
+def get_s3_text(bucket_name, prefix_key, dst):
     for i, key_path in enumerate(list_key_objects(bucket_name, prefix_key)):
         content = get_news_content(bucket_name, key_path)
         fname = key_path.rsplit('/', 1)[-1]
-        save_text(content, fname)
+        save_text(content, dst, fname)
         if i % 100 == 0:
             print '{} finished'.format(i)
         #import pdb
         #pdb.set_trace()
 
 if __name__ == "__main__":
-    get_s3_text("search-key-news", "text/2017/11/10")
+    dst = '/usr/app/tensorflow-learn/corpus/data/news'
+    get_s3_text("search-key-news", "text/2017/11/10", dst)

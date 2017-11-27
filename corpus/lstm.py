@@ -106,7 +106,7 @@ with tf.Session() as sess:
         batch_x, batch_y = news_data.train.next_batch(batch_size)
 
         # Reshape data to get 32(timestemps) seq of 64(embbeding_size) elements
-        pdb.set_trace()
+        #pdb.set_trace()
         batch_x = batch_x.reshape((batch_size, timesteps, embedding_size))
         # X_inputs.shape = [batchsize, timestep_size]  ->  inputs.shape = [batchsize, timestep_size, embedding_size]
         #batch_x = tf.nn.embedding_lookup(embedding, batch_x)  

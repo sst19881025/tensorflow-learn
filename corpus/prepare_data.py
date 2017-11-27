@@ -85,8 +85,12 @@ class Corpus(object):
         for doc in iter_data:
             cur_sentence = doc['word']
             cur_labels = doc['tag']
-            X.append(self.__fill_symbols(cur_sentence, input_size=self._embedding_size))
-            Y.append(self.__fill_symbols(cur_labels, input_size=self._label_size))
+            try:
+                X.append(self.__fill_symbols(cur_sentence, input_size=self._embedding_size))
+                Y.append(self.__fill_symbols(cur_labels, input_size=self._label_size))
+            except:
+                pdb.set_trace()
+        pdb.set_trace()
         return (np.row_stack(X), np.row_stack(Y))
 
     def __fill_symbols(self, sentence, input_size):
@@ -106,10 +110,9 @@ class Corpus(object):
             result = np.zeros((32, input_size))
             for i, pos in enumerate(sentence):
                 result[i][pos] = 1
-        try:
-            result = np.row_stack(result)
-        except:
-            pdb.set_trace()
+
+        result = np.row_stack(result)
+
         return result
 
 
