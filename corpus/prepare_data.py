@@ -29,11 +29,15 @@ import numpy as np
 import tensorflow as tf
 import pymongo
 import gensim
+import traceback
 import pdb
 
 from six.moves import urllib
 from six.moves import xrange  # pylint: disable=redefined-builtin
 from tensorflow.contrib.learn.python.learn.datasets.mnist import read_data_sets
+
+from scpy.logger import get_logger
+logger = get_logger(__file__)
 
 
 def get_mnist_data():
@@ -74,7 +78,7 @@ class Corpus(object):
         """ 获取下一个batch的数据
         """
         data = self.__get_data()
-        res = self.__process_data(data[self._cursor:self._cursor+size])
+        res = self.__process_data(list(data[self._cursor:self._cursor+size]))
         self._cursor += size
         return res
 
@@ -85,36 +89,48 @@ class Corpus(object):
         for doc in iter_data:
             cur_sentence = doc['word']
             cur_labels = doc['tag']
-            try:
-                X.append(self.__fill_symbols(cur_sentence, input_size=self._embedding_size))
-                Y.append(self.__fill_symbols(cur_labels, input_size=self._label_size))
-            except:
-                pdb.set_trace()
-        pdb.set_trace()
+            X.append(self.__fill_x_symbols(cur_sentence))
+            Y.append(self.__fill_y_symbols(cur_labels))
         return (np.row_stack(X), np.row_stack(Y))
 
-    def __fill_symbols(self, sentence, input_size):
+    def __fill_x_symbols(self, sentence):
         """ 不足size的补0，超出size的截断
         """
-        # 补位 / 截断后
-        sentence = filter(lambda x:x in self._word2vec.wv, sentence)
-        sentence = sentence[:32] + [0] * min(0, 32-len(sentence))
-
-        result = []
-        if input_size == self._embedding_size:
+        try:
+            result = []
+            # 补位 / 截断后
+            sentence = filter(lambda x:x in self._word2vec.wv, sentence)
+            sentence = sentence[:32] + ['unknown'] * (32-min(32, len(sentence)))
             for wd in sentence:
                 word_vec = self._word2vec.wv[wd]
                 result.append(word_vec)
-        elif input_size == self._label_size:
+
+            res_arr = np.array(result)
+            result = np.row_stack(res_arr.reshape((1, res_arr.size)))
+        except:
+            err = traceback.format_exc()
+            logger.error(err)
+            pdb.set_trace()
+        return result
+
+    def __fill_y_symbols(self, sentence):
+        """ 不足size的补0，超出size的截断
+        """
+        try:
+            result = []
+            sentence = sentence[:32] + [0] * (32-min(32, len(sentence)))
             # 数据列，one-hot编码之后非零的列
-            result = np.zeros((32, input_size))
+            result = np.zeros((32, self._label_size))
             for i, pos in enumerate(sentence):
                 result[i][pos] = 1
 
-        result = np.row_stack(result)
-
+            res_arr = np.array(result)
+            result = np.row_stack(res_arr.reshape((1, res_arr.size)))
+        except:
+            err = traceback.format_exc()
+            logger.error(err)
+            pdb.set_trace()
         return result
-
 
 
 class DataSets(object):

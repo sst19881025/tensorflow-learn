@@ -21,7 +21,9 @@ import numpy as np
 import pdb
 
 # Import MNIST data
-from prepare_data import mnist
+from prepare_data import get_mnist_data
+
+mnist = get_mnist_data()
 
 '''
 To classify images using a bidirectional recurrent neural network, we consider
@@ -103,6 +105,7 @@ with tf.Session() as sess:
 
     for step in range(1, training_steps+1):
         batch_x, batch_y = mnist.train.next_batch(batch_size)
+        pdb.set_trace()
         # Reshape data to get 28 seq of 28 elements
         batch_x = batch_x.reshape((batch_size, timesteps, num_input))
         # Run optimization op (backprop)

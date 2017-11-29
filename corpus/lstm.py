@@ -39,8 +39,8 @@ num_hidden = 128 # hidden layer num of features
 num_classes = 5 # MNIST total classes (0-4 digits)
 
 # tf Graph input
-X = tf.placeholder("float", [None, timesteps, embedding_size])
-Y = tf.placeholder("float", [None, num_classes])
+X = tf.placeholder("float", [None, timesteps])
+Y = tf.placeholder("float", [None, timesteps])
 
 # Define weights
 weights = {
@@ -58,7 +58,13 @@ def BiRNN(x, weights, biases):
     # Current data input shape: (batch_size, timesteps, n_input)
     # Required shape: 'timesteps' tensors list of shape (batch_size, embedding_size)
     # Unstack to get a list of 'timesteps' tensors of shape (batch_size, embedding_size)
-    x = tf.unstack(x, timesteps, 1)
+    #x = tf.unstack(x, timesteps, 1)
+
+    # ** 0.char embedding，请自行理解 embedding 的原理！！做 NLP 的朋友必须理解这个
+    #embedding = tf.get_variable("embedding", [vocab_size, embedding_size], dtype=tf.float32)
+    # X_inputs.shape = [batchsize, timestep_size]  ->  inputs.shape = [batchsize, timestep_size, embedding_size]
+    #inputs = tf.nn.embedding_lookup(embedding, X_inputs) 
+
     # Define lstm cells with tensorflow
     # Forward direction cell
     lstm_fw_cell = rnn.BasicLSTMCell(num_hidden, forget_bias=1.0)
@@ -106,7 +112,7 @@ with tf.Session() as sess:
         batch_x, batch_y = news_data.train.next_batch(batch_size)
 
         # Reshape data to get 32(timestemps) seq of 64(embbeding_size) elements
-        #pdb.set_trace()
+        pdb.set_trace()
         batch_x = batch_x.reshape((batch_size, timesteps, embedding_size))
         # X_inputs.shape = [batchsize, timestep_size]  ->  inputs.shape = [batchsize, timestep_size, embedding_size]
         #batch_x = tf.nn.embedding_lookup(embedding, batch_x)  
