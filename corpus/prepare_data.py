@@ -71,7 +71,7 @@ class Corpus(object):
         if self._usage == 'train':
             data = db[self._collection].find({}, {'word':1, 'tag':1, '_id':1})[:int(count*0.8)]
         elif self._usage == 'test':
-            data = db[self._collection].find({}, {'word':1, 'tag':1, '_id':1})[int(count*0.2):]
+            data = db[self._collection].find({}, {'word':1, 'tag':1, '_id':1})[int(count*0.8):]
         return data
 
     def next_batch(self, size=100):
