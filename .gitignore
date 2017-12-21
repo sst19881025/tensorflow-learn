@@ -3,6 +3,11 @@
 .idea/**
 .zip
 .tar.gz
+.text
+.txt
+.model
+.vector
+.mod
 
 # Windows:
 Thumbs.db
