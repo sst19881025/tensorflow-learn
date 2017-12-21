@@ -1,13 +1,13 @@
 *.sql
 .idea/
 .idea/**
-.zip
-.tar.gz
-.text
-.txt
-.model
-.vector
-.mod
+*.zip
+*.tar.gz
+*.text
+*.txt
+*.model
+*.vector
+*.mod
 
 # Windows:
 Thumbs.db
