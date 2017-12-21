@@ -1,6 +1,8 @@
 *.sql
 .idea/
 .idea/**
+.zip
+.tar.gz
 
 # Windows:
 Thumbs.db
