@@ -100,19 +100,29 @@ def save_text(db, collection):
         #cur_sentence = []
         #cur_labels = []
         for word in word_list:
-            word = word.strip()
-            # 汉子体系
+            word = strQ2B(word.strip())
+            # 汉字体系
             if re.search(u'[\u2E80-\u9FFF]', word):
-                # 对每个词（双十一/你好 等）中的每个字给标签
+                # 对每个词（双十一/你好 等）中的每个字给标签, 不含标点
+                if re.search(u'^[，。！、…《》（）【】\[\]\{\}：；“‘”’？￥,\.\?:;\'\"\(\)~～]', word):
+                    continue
                 word_len = len(word)
                 for j, char in enumerate(word):
+                    
                     # 每个字向量的行拼接
                     doc_text += char + ' '
             elif re.search(u'[0-9a-zA-Z\-]', word):
-                doc_text += char + ' '
-        total_text += strQ2B(doc_text).strip() + ' <BR> '
+                doc_text += word + ' '
+            elif word in ['.', ',']:
+                if re.search(u'[0-9]', doc_text.strip()[-1]):
+                    doc_text += word + ' '
+        total_text += doc_text.strip() + ' <BR> '
         if i % 100 == 0:
             print('doc {} finished'.format(i))
+    # 清除单个数字之间的空格
+    total_text = re.sub('(?<=\s[\d\.\,])\s(?=[\d\.\,]\s)', '', total_text)
+    # 保留类似5s, 4g, 2M等单位符号之间的空格
+    total_text = re.sub('(?<=\d)\s(?=[a-zA-Z]\s)', '', total_text)
     w = open('/usr/app/tensorflow-learn/corpus/data/news.txt', 'w')
     w.write(total_text.encode('utf-8'))
     w.close()

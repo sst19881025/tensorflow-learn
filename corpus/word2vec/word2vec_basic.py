@@ -62,13 +62,20 @@ def read_data(filename):
     return data
 
 
+def read_text():
+    filename = '/usr/app/tensorflow-learn/corpus/data/news.txt'
+    with open(filename, 'r') as f:
+        data = tf.compat.as_str(f.read()).split()
+    return data
+
 def save_data(data):
     w = open('./embedding.pkl', 'w')
-    pickle.dumps(data, w)
+    pickle.dump(data, w)
     w.close()
 
 
-vocabulary = read_data(filename)
+#vocabulary = read_data(filename)
+vocabulary = read_text()
 print('Data size %s, vocab len %s' % (len(vocabulary), len(set(vocabulary))))
 
 # Step 2: Build the dictionary and replace rare words with UNK token.
@@ -262,7 +269,7 @@ with tf.Session(graph=graph) as session:
                 log_str = 'Nearest to %s:' % valid_word
                 for k in xrange(top_k):
                     close_word = reverse_dictionary[nearest[k]]
-                    log_str = '%s %s,' % (log_str, close_word)
+                    log_str = '%s %s; ' % (log_str, close_word)
                 print(log_str)
     final_embeddings = normalized_embeddings.eval()
     save_data(final_embeddings)
